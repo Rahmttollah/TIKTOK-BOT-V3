@@ -276,5 +276,5 @@ async function startBot() {
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Premium Server running on port ${PORT}`);
-  console.log(`🌐 Visit: YOUR_RAILWAY_URL`);
+  console.log(`🌐 Visit: https://tiktok-bot-v3-production.up.railway.app/`);
 });
