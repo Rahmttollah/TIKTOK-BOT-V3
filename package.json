@@ -1,7 +1,7 @@
 {
-  "name": "tiktok-viewbot-v4",
-  "version": "4.0.0",
-  "description": "TikTok View Bot with Improved Success Rate",
+  "name": "tiktok-viewbot-speed",
+  "version": "2.0.0",
+  "description": "TikTok View Bot with Speed Boost and Timer",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -11,8 +11,7 @@
   },
   "keywords": [
     "tiktok",
-    "viewbot",
-    "web-interface"
+    "viewbot"
   ],
   "author": "NAIMUL HACKER KING",
   "license": "MIT"
