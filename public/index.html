@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚀 TikTok View Bot - Speed Boosted</title>
+    <title>🚀 TikTok Bot - Max Speed</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
@@ -49,6 +49,25 @@
             padding: 30px;
         }
         
+        .mode-section {
+            margin-bottom: 30px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .mode-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .mode-header i {
+            font-size: 1.5em;
+        }
+        
         .form-group {
             margin-bottom: 20px;
         }
@@ -78,7 +97,6 @@
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 10px;
-            margin-bottom: 20px;
         }
         
         .timer-input {
@@ -227,13 +245,14 @@
         
         .mode-btn {
             flex: 1;
-            padding: 12px;
+            padding: 15px;
             border: 2px solid #ddd;
             border-radius: 8px;
             background: white;
             cursor: pointer;
             text-align: center;
             transition: all 0.3s;
+            font-weight: bold;
         }
         
         .mode-btn.active {
@@ -242,58 +261,114 @@
             color: white;
         }
         
-        .info-text {
-            text-align: center;
-            color: #666;
-            font-size: 0.9em;
-            margin-top: 10px;
+        .speed-badge {
+            background: #ff6b6b;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            margin-left: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🚀 TikTok View Bot</h1>
-            <p>By NAIMUL HACKER KING | Speed Boosted + Timer Feature</p>
+            <h1>🚀 TikTok Bot <span class="speed-badge">MAX SPEED</span></h1>
+            <p>By NAIMUL HACKER KING | Original Algorithm + Maximum Speed</p>
         </div>
         
         <div class="content">
             <div class="mode-selector">
-                <div class="mode-btn active" onclick="setMode('target')">🎯 Target Mode</div>
-                <div class="mode-btn" onclick="setMode('timer')">⏰ Timer Mode</div>
-                <div class="mode-btn" onclick="setMode('both')">🔥 Both Modes</div>
-            </div>
-            
-            <div class="form-group" id="targetGroup">
-                <label for="targetViews">🎯 Target Views (Optional)</label>
-                <input type="number" id="targetViews" placeholder="Leave empty for timer mode only">
-            </div>
-            
-            <div class="form-group">
-                <label for="videoLink">📹 TikTok Video Link</label>
-                <input type="text" id="videoLink" placeholder="Paste TikTok video URL">
-            </div>
-            
-            <div class="form-group" id="timerGroup" style="display: none;">
-                <label>⏰ Timer Duration (Optional)</label>
-                <div class="timer-group">
-                    <div class="timer-input">
-                        <label>Hours</label>
-                        <input type="number" id="timerHours" min="0" max="23" placeholder="0">
-                    </div>
-                    <div class="timer-input">
-                        <label>Minutes</label>
-                        <input type="number" id="timerMinutes" min="0" max="59" placeholder="0">
-                    </div>
-                    <div class="timer-input">
-                        <label>Seconds</label>
-                        <input type="number" id="timerSeconds" min="0" max="59" placeholder="0">
-                    </div>
+                <div class="mode-btn active" onclick="setMode('target')">
+                    🎯 Target Mode
+                </div>
+                <div class="mode-btn" onclick="setMode('timer')">
+                    ⏰ Timer Mode  
+                </div>
+                <div class="mode-btn" onclick="setMode('both')">
+                    🔥 Both Modes
                 </div>
             </div>
             
-            <div class="info-text" id="modeInfo">
-                Set target views to stop when reached, or timer to run for specific time
+            <div class="form-group">
+                <label for="videoLink">📹 TikTok Video Link (Required)</label>
+                <input type="text" id="videoLink" placeholder="Paste TikTok video URL">
+            </div>
+            
+            <!-- TARGET MODE SECTION -->
+            <div class="mode-section" id="targetSection">
+                <div class="mode-header">
+                    <i class="fas fa-bullseye"></i>
+                    <h3>🎯 Target Mode Settings</h3>
+                </div>
+                <div class="form-group">
+                    <label for="targetViews">Target Views</label>
+                    <input type="number" id="targetViews" placeholder="Enter target views count" min="1">
+                </div>
+                <div class="info-text">
+                    Bot will stop automatically when target views are reached
+                </div>
+            </div>
+            
+            <!-- TIMER MODE SECTION -->
+            <div class="mode-section" id="timerSection" style="display: none;">
+                <div class="mode-header">
+                    <i class="fas fa-clock"></i>
+                    <h3>⏰ Timer Mode Settings</h3>
+                </div>
+                <div class="form-group">
+                    <label>Timer Duration</label>
+                    <div class="timer-group">
+                        <div class="timer-input">
+                            <label>Hours</label>
+                            <input type="number" id="timerHours" min="0" max="23" placeholder="0">
+                        </div>
+                        <div class="timer-input">
+                            <label>Minutes</label>
+                            <input type="number" id="timerMinutes" min="0" max="59" placeholder="0">
+                        </div>
+                        <div class="timer-input">
+                            <label>Seconds</label>
+                            <input type="number" id="timerSeconds" min="0" max="59" placeholder="0">
+                        </div>
+                    </div>
+                </div>
+                <div class="info-text">
+                    Bot will run for the specified time duration
+                </div>
+            </div>
+            
+            <!-- BOTH MODES SECTION -->
+            <div class="mode-section" id="bothSection" style="display: none;">
+                <div class="mode-header">
+                    <i class="fas fa-fire"></i>
+                    <h3>🔥 Both Modes Settings</h3>
+                </div>
+                <div class="form-group">
+                    <label for="targetViewsBoth">Target Views (Optional)</label>
+                    <input type="number" id="targetViewsBoth" placeholder="Enter target views" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Timer Duration (Optional)</label>
+                    <div class="timer-group">
+                        <div class="timer-input">
+                            <label>Hours</label>
+                            <input type="number" id="timerHoursBoth" min="0" max="23" placeholder="0">
+                        </div>
+                        <div class="timer-input">
+                            <label>Minutes</label>
+                            <input type="number" id="timerMinutesBoth" min="0" max="59" placeholder="0">
+                        </div>
+                        <div class="timer-input">
+                            <label>Seconds</label>
+                            <input type="number" id="timerSecondsBoth" min="0" max="59" placeholder="0">
+                        </div>
+                    </div>
+                </div>
+                <div class="info-text">
+                    Bot will stop when target reached OR timer finishes
+                </div>
             </div>
             
             <div class="btn-group">
@@ -301,7 +376,7 @@
                     <i class="fas fa-stop-circle"></i> Stop Bot
                 </button>
                 <button class="btn-start" onclick="startBot()">
-                    <i class="fas fa-rocket"></i> Start Bot
+                    <i class="fas fa-rocket"></i> Start Max Speed Bot
                 </button>
             </div>
             
@@ -314,7 +389,7 @@
                     <div class="progress-bar">
                         <div class="progress-fill" id="progressBar" style="width: 0%"></div>
                     </div>
-                    <div class="progress-text" id="progressText">Progress: 0/0 (0%)</div>
+                    <div class="progress-text" id="progressText">Ready to start...</div>
                 </div>
                 
                 <div class="stat-grid">
@@ -356,26 +431,18 @@
             document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
             
-            const targetGroup = document.getElementById('targetGroup');
-            const timerGroup = document.getElementById('timerGroup');
-            const modeInfo = document.getElementById('modeInfo');
+            // Hide all sections
+            document.getElementById('targetSection').style.display = 'none';
+            document.getElementById('timerSection').style.display = 'none';
+            document.getElementById('bothSection').style.display = 'none';
             
-            switch(mode) {
-                case 'target':
-                    targetGroup.style.display = 'block';
-                    timerGroup.style.display = 'none';
-                    modeInfo.textContent = 'Bot will stop when target views are reached';
-                    break;
-                case 'timer':
-                    targetGroup.style.display = 'none';
-                    timerGroup.style.display = 'block';
-                    modeInfo.textContent = 'Bot will run for the specified time duration';
-                    break;
-                case 'both':
-                    targetGroup.style.display = 'block';
-                    timerGroup.style.display = 'block';
-                    modeInfo.textContent = 'Bot will stop when target reached OR timer finishes';
-                    break;
+            // Show selected section
+            if (mode === 'target') {
+                document.getElementById('targetSection').style.display = 'block';
+            } else if (mode === 'timer') {
+                document.getElementById('timerSection').style.display = 'block';
+            } else if (mode === 'both') {
+                document.getElementById('bothSection').style.display = 'block';
             }
         }
         
@@ -388,6 +455,7 @@
         }
         
         function formatTime(ms) {
+            if (!ms || ms <= 0) return '00:00:00';
             const seconds = Math.floor(ms / 1000);
             const hours = Math.floor(seconds / 3600);
             const minutes = Math.floor((seconds % 3600) / 60);
@@ -396,34 +464,44 @@
         }
         
         async function startBot() {
-            const targetViews = document.getElementById('targetViews').value;
             const videoLink = document.getElementById('videoLink').value;
-            const timerHours = document.getElementById('timerHours').value;
-            const timerMinutes = document.getElementById('timerMinutes').value;
-            const timerSeconds = document.getElementById('timerSeconds').value;
             
             if (!videoLink) {
                 showMessage('Please enter TikTok video link!', 'error');
                 return;
             }
             
-            // Validate at least one mode is selected
-            if (currentMode === 'target' && !targetViews) {
-                showMessage('Please enter target views for target mode!', 'error');
-                return;
+            let targetViews, timerHours, timerMinutes, timerSeconds;
+            
+            // Get values based on current mode
+            if (currentMode === 'target') {
+                targetViews = document.getElementById('targetViews').value;
+                if (!targetViews || targetViews <= 0) {
+                    showMessage('Please enter target views for target mode!', 'error');
+                    return;
+                }
+            } else if (currentMode === 'timer') {
+                timerHours = document.getElementById('timerHours').value || 0;
+                timerMinutes = document.getElementById('timerMinutes').value || 0;
+                timerSeconds = document.getElementById('timerSeconds').value || 0;
+                
+                if (!timerHours && !timerMinutes && !timerSeconds) {
+                    showMessage('Please set timer duration for timer mode!', 'error');
+                    return;
+                }
+            } else if (currentMode === 'both') {
+                targetViews = document.getElementById('targetViewsBoth').value || 0;
+                timerHours = document.getElementById('timerHoursBoth').value || 0;
+                timerMinutes = document.getElementById('timerMinutesBoth').value || 0;
+                timerSeconds = document.getElementById('timerSecondsBoth').value || 0;
+                
+                if (!targetViews && !timerHours && !timerMinutes && !timerSeconds) {
+                    showMessage('Please set either target views or timer duration for both mode!', 'error');
+                    return;
+                }
             }
             
-            if (currentMode === 'timer' && !timerHours && !timerMinutes && !timerSeconds) {
-                showMessage('Please set timer duration for timer mode!', 'error');
-                return;
-            }
-            
-            if (currentMode === 'both' && !targetViews && !timerHours && !timerMinutes && !timerSeconds) {
-                showMessage('Please set either target views or timer duration!', 'error');
-                return;
-            }
-            
-            showMessage('🚀 Starting Speed Boosted Bot...', 'success');
+            showMessage('🚀 Starting Maximum Speed Bot...', 'success');
             
             try {
                 const response = await fetch('/start', {
@@ -436,17 +514,15 @@
                         videoLink: videoLink,
                         timerHours: timerHours || 0,
                         timerMinutes: timerMinutes || 0,
-                        timerSeconds: timerSeconds || 0
+                        timerSeconds: timerSeconds || 0,
+                        mode: currentMode
                     })
                 });
                 
                 const data = await response.json();
                 
                 if (data.success) {
-                    let message = 'Bot started! ';
-                    if (data.target > 0) message += `Target: ${data.target} views `;
-                    if (data.timerMode) message += '| Timer mode active';
-                    showMessage(message, 'success');
+                    showMessage(`🚀 Bot Started! Mode: ${data.mode.toUpperCase()}`, 'success');
                     startStatusUpdates();
                 } else {
                     showMessage(data.message, 'error');
@@ -487,21 +563,20 @@
                 document.getElementById('timeLeft').textContent = formatTime(status.timeLeft);
                 
                 // Update progress
-                const progress = status.targetViews > 0 ? (status.success / status.targetViews) * 100 : 0;
-                document.getElementById('progressBar').style.width = `${progress}%`;
-                
-                let progressText = 'Progress: ';
-                if (status.targetViews > 0) {
-                    progressText += `${status.success}/${status.targetViews} (${progress.toFixed(1)}%)`;
+                let progressText = '';
+                if (status.mode === 'target' || status.mode === 'both') {
+                    const progress = status.targetViews > 0 ? (status.success / status.targetViews) * 100 : 0;
+                    document.getElementById('progressBar').style.width = `${progress}%`;
+                    progressText = `Progress: ${status.success}/${status.targetViews} (${progress.toFixed(1)}%)`;
                 } else {
-                    progressText += `${status.success} views`;
+                    progressText = `Views: ${status.success}`;
                 }
                 
-                if (status.timerMode) {
+                if (status.mode === 'timer' || status.mode === 'both') {
                     progressText += ` | Time Left: ${formatTime(status.timeLeft)}`;
                 }
                 
-                document.getElementById('progressText').textContent = progressText;
+                document.getElementById('progressText').textContent = progressText || 'Ready to start...';
                 
             } catch (error) {
                 console.log('Error fetching status');
