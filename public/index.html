@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 TikTok View Bot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin: 10px 0;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        button.stop {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        }
+        
+        .stats {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            transition: width 0.3s ease;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 TikTok View Bot</h1>
+            <p>By NAIMUL HACKER KING | Cloud Edition</p>
+        </div>
+        
+        <div class="content">
+            <div class="form-group">
+                <label for="targetViews">🎯 Target Views:</label>
+                <input type="number" id="targetViews" placeholder="Enter how many views you want (e.g., 10000)" min="1">
+            </div>
+            
+            <div class="form-group">
+                <label for="videoLink">📹 TikTok Video Link:</label>
+                <input type="text" id="videoLink" placeholder="Paste TikTok video URL here">
+            </div>
+            
+            <button onclick="startBot()">🚀 Start View Bot</button>
+            <button class="stop" onclick="stopBot()">🛑 Stop Bot</button>
+            
+            <div id="message"></div>
+            
+            <div class="stats">
+                <h3>📊 Live Statistics</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+                </div>
+                <div id="progressText">Progress: 0/0 (0%)</div>
+                
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="success">0</div>
+                        <div class="stat-label">Success</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="fails">0</div>
+                        <div class="stat-label">Failed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="reqs">0</div>
+                        <div class="stat-label">Total Requests</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="rps">0</div>
+                        <div class="stat-label">RPS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let refreshInterval;
+        
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class="alert ${type}">${message}</div>`;
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000);
+        }
+        
+        async function startBot() {
+            const targetViews = document.getElementById('targetViews').value;
+            const videoLink = document.getElementById('videoLink').value;
+            
+            if (!targetViews || !videoLink) {
+                showMessage('Please enter both target views and video link!', 'error');
+                return;
+            }
+            
+            showMessage('Starting bot...', 'success');
+            
+            try {
+                const response = await fetch('/start', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        targetViews: targetViews,
+                        videoLink: videoLink
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage('Bot started successfully!', 'success');
+                    startStatusUpdates();
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            } catch (error) {
+                showMessage('Error starting bot', 'error');
+            }
+        }
+        
+        async function stopBot() {
+            try {
+                await fetch('/stop', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                showMessage('Bot stopped', 'success');
+                if (refreshInterval) {
+                    clearInterval(refreshInterval);
+                }
+            } catch (error) {
+                showMessage('Error stopping bot', 'error');
+            }
+        }
+        
+        async function updateStatus() {
+            try {
+                const response = await fetch('/status');
+                const status = await response.json();
+                
+                // Update stats
+                document.getElementById('success').textContent = status.success;
+                document.getElementById('fails').textContent = status.fails;
+                document.getElementById('reqs').textContent = status.reqs;
+                document.getElementById('rps').textContent = status.rps;
+                
+                // Update progress
+                const progress = status.targetViews > 0 ? (status.success / status.targetViews) * 100 : 0;
+                document.getElementById('progressBar').style.width = `${progress}%`;
+                document.getElementById('progressText').textContent = 
+                    `Progress: ${status.success}/${status.targetViews} (${progress.toFixed(1)}%)`;
+                
+            } catch (error) {
+                console.log('Error fetching status');
+            }
+        }
+        
+        function startStatusUpdates() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+            refreshInterval = setInterval(updateStatus, 2000);
+            updateStatus(); // Immediate update
+        }
+        
+        // Start status updates when page loads
+        startStatusUpdates();
+    </script>
+</body>
+</html>
