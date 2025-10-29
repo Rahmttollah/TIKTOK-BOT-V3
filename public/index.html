@@ -3,382 +3,297 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚀 Premium TikTok Bot v5.0</title>
+    <title>🚀 TikTok View Bot - Speed Boosted</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        :root {
-            --primary: #8B5FBF;
-            --primary-dark: #6B46C1;
-            --primary-light: #9F7AEA;
-            --secondary: #D53F8C;
-            --dark: #1A202C;
-            --darker: #0F1419;
-            --light: #EDF2F7;
-            --success: #48BB78;
-            --danger: #F56565;
-            --warning: #ECC94B;
+            font-family: 'Arial', sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 50%, var(--primary-dark) 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
-            color: var(--light);
         }
         
         .container {
-            max-width: 1000px;
+            max-width: 900px;
             margin: 0 auto;
-            background: rgba(26, 32, 44, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            border: 1px solid rgba(139, 95, 191, 0.3);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             overflow: hidden;
-            animation: fadeIn 0.8s ease-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
         }
         
         .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
             color: white;
-            padding: 40px 30px;
+            padding: 30px;
             text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
         }
         
         .header h1 {
-            font-size: 3em;
+            font-size: 2.5em;
             margin-bottom: 10px;
-            font-weight: 800;
-            text-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            position: relative;
         }
         
         .header p {
             opacity: 0.9;
-            font-size: 1.2em;
-            font-weight: 300;
-            position: relative;
+            font-size: 1.1em;
         }
         
         .content {
-            padding: 40px;
+            padding: 30px;
         }
         
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         
         label {
             display: block;
-            margin-bottom: 12px;
-            font-weight: 600;
-            color: var(--primary-light);
-            font-size: 1.1em;
-        }
-        
-        .input-group {
-            position: relative;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
         }
         
         input {
             width: 100%;
-            padding: 18px 20px;
-            background: rgba(45, 55, 72, 0.8);
-            border: 2px solid rgba(139, 95, 191, 0.3);
-            border-radius: 12px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
             font-size: 16px;
-            color: var(--light);
-            transition: all 0.3s ease;
-        }
-        
-        input::placeholder {
-            color: rgba(237, 242, 247, 0.5);
+            transition: border-color 0.3s;
         }
         
         input:focus {
             outline: none;
-            border-color: var(--primary-light);
-            box-shadow: 0 0 0 3px rgba(159, 122, 234, 0.3);
-            background: rgba(45, 55, 72, 1);
+            border-color: #667eea;
+        }
+        
+        .timer-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .timer-input {
+            text-align: center;
+        }
+        
+        .timer-input label {
+            font-size: 0.9em;
+            color: #666;
         }
         
         .btn-group {
             display: flex;
-            flex-direction: column;
             gap: 15px;
-            margin: 30px 0;
+            margin: 20px 0;
         }
         
         button {
-            padding: 18px 30px;
+            flex: 1;
+            padding: 15px;
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
             font-size: 16px;
-            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: transform 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-        
-        button:hover::before {
-            left: 100%;
         }
         
         button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-        
-        .btn-start {
-            background: linear-gradient(135deg, var(--success) 0%, #38A169 100%);
-            color: white;
-            order: 1;
+            transform: translateY(-2px);
         }
         
         .btn-stop {
-            background: linear-gradient(135deg, var(--danger) 0%, #E53E3E 100%);
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
             color: white;
-            order: 2;
+        }
+        
+        .btn-start {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
         }
         
         .stats {
-            background: linear-gradient(135deg, rgba(45, 55, 72, 0.8) 0%, rgba(26, 32, 44, 0.9) 100%);
-            padding: 30px;
-            border-radius: 15px;
-            border: 1px solid rgba(139, 95, 191, 0.2);
-            margin-top: 30px;
-            animation: slideUp 0.6s ease-out;
-        }
-        
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .stats-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 25px;
-        }
-        
-        .stats-header h3 {
-            color: var(--primary-light);
-            font-size: 1.4em;
-        }
-        
-        .live-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--success);
-            font-weight: 600;
-        }
-        
-        .live-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--success);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        
-        .progress-container {
-            margin: 25px 0;
-        }
-        
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background: rgba(45, 55, 72, 0.8);
+            background: #f8f9fa;
+            padding: 25px;
             border-radius: 10px;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary) 100%);
-            transition: width 0.5s ease;
-            position: relative;
-        }
-        
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            animation: shimmer 2s infinite;
-        }
-        
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-        
-        .progress-text {
-            text-align: center;
-            font-weight: 600;
-            margin-top: 12px;
-            color: var(--light);
-            font-size: 1.1em;
+            margin-top: 25px;
         }
         
         .stat-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 20px;
-            margin-top: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
         }
         
         .stat-card {
-            background: rgba(26, 32, 44, 0.8);
-            padding: 20px;
-            border-radius: 12px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
             text-align: center;
-            border: 1px solid rgba(139, 95, 191, 0.2);
-            transition: transform 0.3s ease;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary-light);
-        }
-        
-        .stat-icon {
-            font-size: 2em;
-            margin-bottom: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
         .stat-number {
-            font-size: 2em;
-            font-weight: 800;
-            margin-bottom: 5px;
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
         }
         
-        .stat-card.success .stat-number { color: var(--success); }
-        .stat-card.failed .stat-number { color: var(--danger); }
-        .stat-card.requests .stat-number { color: var(--primary-light); }
-        .stat-card.speed .stat-number { color: var(--warning); }
-        .stat-card.rate .stat-number { color: var(--secondary); }
+        .stat-card.success .stat-number {
+            color: #28a745;
+        }
+        
+        .stat-card.failed .stat-number {
+            color: #dc3545;
+        }
+        
+        .stat-card.rate .stat-number {
+            color: #ffc107;
+        }
+        
+        .stat-card.timer .stat-number {
+            color: #17a2b8;
+            font-family: monospace;
+        }
         
         .stat-label {
             font-size: 0.9em;
-            color: rgba(237, 242, 247, 0.7);
-            font-weight: 500;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .progress-container {
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 25px;
+            background: #e9ecef;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 10px;
+            color: #333;
         }
         
         .alert {
-            padding: 20px;
-            border-radius: 12px;
-            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
             text-align: center;
-            animation: slideIn 0.5s ease-out;
-        }
-        
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
         }
         
         .alert.success {
-            background: rgba(72, 187, 120, 0.2);
-            border: 1px solid var(--success);
-            color: var(--success);
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
         
         .alert.error {
-            background: rgba(245, 101, 101, 0.2);
-            border: 1px solid var(--danger);
-            color: var(--danger);
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
         
-        .premium-badge {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .mode-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .mode-btn.active {
+            border-color: #667eea;
+            background: #667eea;
             color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            font-weight: 600;
-            display: inline-block;
-            margin-left: 10px;
-            animation: glow 2s infinite;
         }
         
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 5px var(--primary-light); }
-            50% { box-shadow: 0 0 20px var(--primary-light); }
+        .info-text {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🚀 Premium TikTok Bot <span class="premium-badge">v5.0</span></h1>
-            <p>By NAIMUL HACKER KING | Enhanced Success Algorithm</p>
+            <h1>🚀 TikTok View Bot</h1>
+            <p>By NAIMUL HACKER KING | Speed Boosted + Timer Feature</p>
         </div>
         
         <div class="content">
-            <div class="form-group">
-                <label for="targetViews"><i class="fas fa-bullseye"></i> Target Views</label>
-                <div class="input-group">
-                    <input type="number" id="targetViews" placeholder="Enter target views count" min="1">
-                </div>
+            <div class="mode-selector">
+                <div class="mode-btn active" onclick="setMode('target')">🎯 Target Mode</div>
+                <div class="mode-btn" onclick="setMode('timer')">⏰ Timer Mode</div>
+                <div class="mode-btn" onclick="setMode('both')">🔥 Both Modes</div>
+            </div>
+            
+            <div class="form-group" id="targetGroup">
+                <label for="targetViews">🎯 Target Views (Optional)</label>
+                <input type="number" id="targetViews" placeholder="Leave empty for timer mode only">
             </div>
             
             <div class="form-group">
-                <label for="videoLink"><i class="fas fa-video"></i> TikTok Video Link</label>
-                <div class="input-group">
-                    <input type="text" id="videoLink" placeholder="Paste TikTok video URL">
+                <label for="videoLink">📹 TikTok Video Link</label>
+                <input type="text" id="videoLink" placeholder="Paste TikTok video URL">
+            </div>
+            
+            <div class="form-group" id="timerGroup" style="display: none;">
+                <label>⏰ Timer Duration (Optional)</label>
+                <div class="timer-group">
+                    <div class="timer-input">
+                        <label>Hours</label>
+                        <input type="number" id="timerHours" min="0" max="23" placeholder="0">
+                    </div>
+                    <div class="timer-input">
+                        <label>Minutes</label>
+                        <input type="number" id="timerMinutes" min="0" max="59" placeholder="0">
+                    </div>
+                    <div class="timer-input">
+                        <label>Seconds</label>
+                        <input type="number" id="timerSeconds" min="0" max="59" placeholder="0">
+                    </div>
                 </div>
+            </div>
+            
+            <div class="info-text" id="modeInfo">
+                Set target views to stop when reached, or timer to run for specific time
             </div>
             
             <div class="btn-group">
@@ -386,20 +301,14 @@
                     <i class="fas fa-stop-circle"></i> Stop Bot
                 </button>
                 <button class="btn-start" onclick="startBot()">
-                    <i class="fas fa-rocket"></i> Start View Bot
+                    <i class="fas fa-rocket"></i> Start Bot
                 </button>
             </div>
             
             <div id="message"></div>
             
             <div class="stats">
-                <div class="stats-header">
-                    <h3><i class="fas fa-chart-bar"></i> Live Statistics</h3>
-                    <div class="live-indicator">
-                        <div class="live-dot"></div>
-                        LIVE
-                    </div>
-                </div>
+                <h3>📊 Live Statistics</h3>
                 
                 <div class="progress-container">
                     <div class="progress-bar">
@@ -410,29 +319,28 @@
                 
                 <div class="stat-grid">
                     <div class="stat-card success">
-                        <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
                         <div class="stat-number" id="success">0</div>
                         <div class="stat-label">Success</div>
                     </div>
                     <div class="stat-card failed">
-                        <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
                         <div class="stat-number" id="fails">0</div>
                         <div class="stat-label">Failed</div>
                     </div>
-                    <div class="stat-card requests">
-                        <div class="stat-icon"><i class="fas fa-paper-plane"></i></div>
+                    <div class="stat-card">
                         <div class="stat-number" id="reqs">0</div>
                         <div class="stat-label">Total Requests</div>
                     </div>
-                    <div class="stat-card speed">
-                        <div class="stat-icon"><i class="fas fa-tachometer-alt"></i></div>
+                    <div class="stat-card">
                         <div class="stat-number" id="rps">0</div>
                         <div class="stat-label">RPS</div>
                     </div>
                     <div class="stat-card rate">
-                        <div class="stat-icon"><i class="fas fa-percentage"></i></div>
                         <div class="stat-number" id="successRate">0%</div>
                         <div class="stat-label">Success Rate</div>
+                    </div>
+                    <div class="stat-card timer">
+                        <div class="stat-number" id="timeLeft">00:00:00</div>
+                        <div class="stat-label">Time Left</div>
                     </div>
                 </div>
             </div>
@@ -441,6 +349,35 @@
 
     <script>
         let refreshInterval;
+        let currentMode = 'target';
+        
+        function setMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const targetGroup = document.getElementById('targetGroup');
+            const timerGroup = document.getElementById('timerGroup');
+            const modeInfo = document.getElementById('modeInfo');
+            
+            switch(mode) {
+                case 'target':
+                    targetGroup.style.display = 'block';
+                    timerGroup.style.display = 'none';
+                    modeInfo.textContent = 'Bot will stop when target views are reached';
+                    break;
+                case 'timer':
+                    targetGroup.style.display = 'none';
+                    timerGroup.style.display = 'block';
+                    modeInfo.textContent = 'Bot will run for the specified time duration';
+                    break;
+                case 'both':
+                    targetGroup.style.display = 'block';
+                    timerGroup.style.display = 'block';
+                    modeInfo.textContent = 'Bot will stop when target reached OR timer finishes';
+                    break;
+            }
+        }
         
         function showMessage(message, type) {
             const messageDiv = document.getElementById('message');
@@ -450,21 +387,43 @@
             }, 5000);
         }
         
+        function formatTime(ms) {
+            const seconds = Math.floor(ms / 1000);
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        
         async function startBot() {
             const targetViews = document.getElementById('targetViews').value;
             const videoLink = document.getElementById('videoLink').value;
+            const timerHours = document.getElementById('timerHours').value;
+            const timerMinutes = document.getElementById('timerMinutes').value;
+            const timerSeconds = document.getElementById('timerSeconds').value;
             
-            if (!targetViews || !videoLink) {
-                showMessage('Please enter both target views and video link!', 'error');
+            if (!videoLink) {
+                showMessage('Please enter TikTok video link!', 'error');
                 return;
             }
             
-            if (targetViews < 1) {
-                showMessage('Please enter a valid target views number!', 'error');
+            // Validate at least one mode is selected
+            if (currentMode === 'target' && !targetViews) {
+                showMessage('Please enter target views for target mode!', 'error');
                 return;
             }
             
-            showMessage('🚀 Starting Premium Bot with Enhanced Algorithm...', 'success');
+            if (currentMode === 'timer' && !timerHours && !timerMinutes && !timerSeconds) {
+                showMessage('Please set timer duration for timer mode!', 'error');
+                return;
+            }
+            
+            if (currentMode === 'both' && !targetViews && !timerHours && !timerMinutes && !timerSeconds) {
+                showMessage('Please set either target views or timer duration!', 'error');
+                return;
+            }
+            
+            showMessage('🚀 Starting Speed Boosted Bot...', 'success');
             
             try {
                 const response = await fetch('/start', {
@@ -473,15 +432,21 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        targetViews: targetViews,
-                        videoLink: videoLink
+                        targetViews: targetViews || 0,
+                        videoLink: videoLink,
+                        timerHours: timerHours || 0,
+                        timerMinutes: timerMinutes || 0,
+                        timerSeconds: timerSeconds || 0
                     })
                 });
                 
                 const data = await response.json();
                 
                 if (data.success) {
-                    showMessage(`🚀 Premium Bot Started! Target: ${data.target} views`, 'success');
+                    let message = 'Bot started! ';
+                    if (data.target > 0) message += `Target: ${data.target} views `;
+                    if (data.timerMode) message += '| Timer mode active';
+                    showMessage(message, 'success');
                     startStatusUpdates();
                 } else {
                     showMessage(data.message, 'error');
@@ -499,7 +464,7 @@
                         'Content-Type': 'application/json',
                     }
                 });
-                showMessage('🛑 Bot Stopped Successfully', 'success');
+                showMessage('🛑 Bot Stopped', 'success');
                 if (refreshInterval) {
                     clearInterval(refreshInterval);
                 }
@@ -519,12 +484,24 @@
                 document.getElementById('reqs').textContent = status.reqs;
                 document.getElementById('rps').textContent = status.rps;
                 document.getElementById('successRate').textContent = status.successRate;
+                document.getElementById('timeLeft').textContent = formatTime(status.timeLeft);
                 
                 // Update progress
                 const progress = status.targetViews > 0 ? (status.success / status.targetViews) * 100 : 0;
                 document.getElementById('progressBar').style.width = `${progress}%`;
-                document.getElementById('progressText').textContent = 
-                    `Progress: ${status.success}/${status.targetViews} (${progress.toFixed(1)}%)`;
+                
+                let progressText = 'Progress: ';
+                if (status.targetViews > 0) {
+                    progressText += `${status.success}/${status.targetViews} (${progress.toFixed(1)}%)`;
+                } else {
+                    progressText += `${status.success} views`;
+                }
+                
+                if (status.timerMode) {
+                    progressText += ` | Time Left: ${formatTime(status.timeLeft)}`;
+                }
+                
+                document.getElementById('progressText').textContent = progressText;
                 
             } catch (error) {
                 console.log('Error fetching status');
@@ -535,11 +512,11 @@
             if (refreshInterval) {
                 clearInterval(refreshInterval);
             }
-            refreshInterval = setInterval(updateStatus, 1500);
+            refreshInterval = setInterval(updateStatus, 1000);
             updateStatus();
         }
         
-        // Start status updates when page loads
+        // Initialize
         startStatusUpdates();
     </script>
 </body>
