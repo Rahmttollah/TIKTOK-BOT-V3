@@ -21,36 +21,16 @@ let botStatus = {
   targetViews: 0,
   aweme_id: '',
   startTime: null,
+  endTime: null,
   rps: 0,
   rpm: 0,
-  successRate: '0%'
+  successRate: '0%',
+  timerMode: false,
+  timeLeft: 0
 };
 
 let isRunning = false;
-
-// Premium API endpoints
-const API_ENDPOINTS = [
-  'api19-core-c-alisg.tiktokv.com',
-  'api16-core-c-alisg.tiktokv.com',
-  'api19-normal-c-useast1a.tiktokv.com',
-  'api16-normal-c-alisg.tiktokv.com'
-];
-
-function getRandomEndpoint() {
-  return API_ENDPOINTS[Math.floor(Math.random() * API_ENDPOINTS.length)];
-}
-
-// Premium User Agents
-const USER_AGENTS = [
-  'TikTok 28.5.5 rv:285505 (iPhone; iOS 16.6; en_US) Cronet',
-  'TikTok 28.5.5 (iPhone; iOS 17.0; Scale/3.00; en_US)',
-  'TikTok 28.5.5 (iPad; iOS 16.5; Scale/2.00; en_US)',
-  'com.ss.android.ugc.trill/280505 (Linux; U; Android 13; en_US; SM-G998B; Build/TP1A.220624.014; Cronet)'
-];
-
-function getRandomUserAgent() {
-  return USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
-}
+let timerInterval;
 
 // Routes
 app.get('/', (req, res) => {
@@ -61,19 +41,38 @@ app.get('/status', (req, res) => {
   const total = botStatus.reqs;
   const success = botStatus.success;
   botStatus.successRate = total > 0 ? ((success / total) * 100).toFixed(1) + '%' : '0%';
+  
+  // Calculate time left for timer mode
+  if (botStatus.timerMode && botStatus.endTime) {
+    const now = new Date().getTime();
+    botStatus.timeLeft = Math.max(0, botStatus.endTime - now);
+  }
+  
   res.json(botStatus);
 });
 
 app.post('/start', (req, res) => {
-  const { targetViews, videoLink } = req.body;
+  const { targetViews, videoLink, timerHours, timerMinutes, timerSeconds } = req.body;
   
-  if (!targetViews || !videoLink) {
-    return res.json({ success: false, message: 'Target views and video link required' });
+  if (!videoLink) {
+    return res.json({ success: false, message: 'Video link required' });
   }
 
   const idMatch = videoLink.match(/\d{18,19}/g);
   if (!idMatch) {
     return res.json({ success: false, message: 'Invalid TikTok video link' });
+  }
+
+  // Calculate timer end time if timer mode
+  let endTime = null;
+  let timerMode = false;
+  
+  if (timerHours > 0 || timerMinutes > 0 || timerSeconds > 0) {
+    const totalSeconds = (parseInt(timerHours) || 0) * 3600 + 
+                        (parseInt(timerMinutes) || 0) * 60 + 
+                        (parseInt(timerSeconds) || 0);
+    endTime = new Date().getTime() + (totalSeconds * 1000);
+    timerMode = true;
   }
 
   // Reset stats
@@ -82,36 +81,48 @@ app.post('/start', (req, res) => {
     success: 0,
     fails: 0,
     reqs: 0,
-    targetViews: parseInt(targetViews),
+    targetViews: parseInt(targetViews) || 0,
     aweme_id: idMatch[0],
     startTime: new Date(),
+    endTime: endTime,
     rps: 0,
     rpm: 0,
-    successRate: '0%'
+    successRate: '0%',
+    timerMode: timerMode,
+    timeLeft: timerMode ? (endTime - new Date().getTime()) : 0
   };
 
   isRunning = true;
+  
+  // Start bot in background
   startBot();
   
   res.json({ 
     success: true, 
-    message: '🚀 Premium Bot Started!',
+    message: 'Bot started successfully!',
     target: botStatus.targetViews,
-    videoId: botStatus.aweme_id
+    videoId: botStatus.aweme_id,
+    timerMode: timerMode
   });
 });
 
 app.post('/stop', (req, res) => {
   isRunning = false;
   botStatus.running = false;
-  res.json({ success: true, message: '🛑 Bot Stopped' });
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+  res.json({ success: true, message: 'Bot stopped' });
 });
 
-// Enhanced Gorgon Algorithm
-function generateGorgon(params, unix) {
-  const randomHex = crypto.randomBytes(16).toString('hex');
+// Original Gorgon function
+function gorgon(params, data, cookies, unix) {
+  function md5(input) {
+    return crypto.createHash('md5').update(input).digest('hex');
+  }
+  let baseStr = md5(params) + (data ? md5(data) : '0'.repeat(32)) + (cookies ? md5(cookies) : '0'.repeat(32));
   return {
-    'X-Gorgon': '0404c0d30000' + randomHex.slice(0, 24),
+    'X-Gorgon': '0404b0d300000000000000000000000000000000',
     'X-Khronos': unix.toString()
   };
 }
@@ -123,27 +134,24 @@ function sendRequest(did, iid, cdid, openudid, aweme_id) {
       return;
     }
 
-    const params = `device_id=${did}&iid=${iid}&device_type=SM-G998B&app_name=musically_go&host_abi=arm64-v8a&channel=googleplay&device_platform=android&version_code=280505&device_brand=samsung&os_version=13&aid=1340`;
+    const params = `device_id=${did}&iid=${iid}&device_type=SM-G973N&app_name=musically_go&host_abi=armeabi-v7a&channel=googleplay&device_platform=android&version_code=160904&device_brand=samsung&os_version=9&aid=1340`;
     const payload = `item_id=${aweme_id}&play_delta=1`;
-    const sig = generateGorgon(params, Math.floor(Date.now() / 1000));
+    const sig = gorgon(params, null, null, Math.floor(Date.now() / 1000));
     
     const options = {
-      hostname: getRandomEndpoint(),
+      hostname: 'api16-va.tiktokv.com',
       port: 443,
       path: `/aweme/v1/aweme/stats/?${params}`,
       method: 'POST',
       headers: {
-        'cookie': 'sessionid=' + crypto.randomBytes(20).toString('hex'),
+        'cookie': 'sessionid=90c38a59d8076ea0fbc01c8643efbe47',
         'x-gorgon': sig['X-Gorgon'],
         'x-khronos': sig['X-Khronos'],
-        'user-agent': getRandomUserAgent(),
-        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        'accept-encoding': 'gzip, deflate, br',
-        'accept': 'application/json',
-        'connection': 'Keep-Alive',
+        'user-agent': 'okhttp/3.10.0.1',
+        'content-type': 'application/x-www-form-urlencoded',
         'content-length': Buffer.byteLength(payload)
       },
-      timeout: 15000
+      timeout: 5000
     };
 
     const req = https.request(options, (res) => {
@@ -152,27 +160,17 @@ function sendRequest(did, iid, cdid, openudid, aweme_id) {
         data += chunk;
       });
       res.on('end', () => {
-        botStatus.reqs++;
+        reqs++;
         try {
-          if (res.statusCode === 200) {
-            const jsonData = JSON.parse(data);
-            if (jsonData && (jsonData.log_pb || jsonData.status_code === 0)) {
-              botStatus.success++;
-              console.log(`✅ [SUCCESS] ${botStatus.success}/${botStatus.targetViews}`);
-            } else {
-              botStatus.fails++;
-            }
+          const jsonData = JSON.parse(data);
+          if (jsonData && jsonData.log_pb && jsonData.log_pb.impr_id) {
+            botStatus.success++;
+            console.log(`✅ ${botStatus.success}/${botStatus.targetViews} | Total: ${botStatus.reqs}`);
           } else {
             botStatus.fails++;
           }
         } catch (e) {
           botStatus.fails++;
-        }
-        
-        if (botStatus.success >= botStatus.targetViews) {
-          console.log('🎉 Target achieved!');
-          isRunning = false;
-          botStatus.running = false;
         }
         resolve();
       });
@@ -198,23 +196,14 @@ function sendRequest(did, iid, cdid, openudid, aweme_id) {
 
 async function sendBatch(batchDevices, aweme_id) {
   const promises = batchDevices.map(device => {
-    const parts = device.split(':');
-    if (parts.length >= 4) {
-      const [did, iid, cdid, openudid] = parts;
-      return sendRequest(did, iid, cdid, openudid, aweme_id);
-    }
-    return Promise.resolve();
+    const [did, iid, cdid, openudid] = device.split(':');
+    return sendRequest(did, iid, cdid, openudid, aweme_id);
   });
-  
-  // Better batch control
-  const results = await Promise.allSettled(promises);
-  return results;
+  await Promise.all(promises);
 }
 
 async function startBot() {
-  console.log('🚀 Starting Premium TikTok Bot...');
-  console.log(`🎯 Target: ${botStatus.targetViews} views`);
-  console.log(`📹 Video ID: ${botStatus.aweme_id}`);
+  console.log('🚀 Starting TikTok View Bot...');
   
   const devices = fs.existsSync('devices.txt') ? 
     fs.readFileSync('devices.txt', 'utf-8').split('\n').filter(Boolean) : [];
@@ -226,14 +215,28 @@ async function startBot() {
     return;
   }
 
-  console.log(`📱 Loaded ${devices.length} premium devices`);
+  console.log(`📱 Loaded ${devices.length} devices`);
   
-  const concurrency = 30; // Optimized for success
+  // SPEED BOOST - Increased concurrency
+  const concurrency = 300; // Increased from 200 to 300
   let lastReqs = 0;
 
-  // Enhanced stats calculator
+  // Timer check for timer mode
+  if (botStatus.timerMode) {
+    timerInterval = setInterval(() => {
+      const now = new Date().getTime();
+      if (now >= botStatus.endTime) {
+        console.log('⏰ Timer finished! Stopping bot...');
+        isRunning = false;
+        botStatus.running = false;
+        clearInterval(timerInterval);
+      }
+    }, 1000);
+  }
+
+  // RPS Calculator
   const statsInterval = setInterval(() => {
-    botStatus.rps = ((botStatus.reqs - lastReqs) / 2).toFixed(1);
+    botStatus.rps = ((botStatus.reqs - lastReqs) / 1.5).toFixed(1);
     botStatus.rpm = (botStatus.rps * 60).toFixed(1);
     lastReqs = botStatus.reqs;
     
@@ -241,40 +244,50 @@ async function startBot() {
     const success = botStatus.success;
     botStatus.successRate = total > 0 ? ((success / total) * 100).toFixed(1) + '%' : '0%';
     
-    console.log(`📊 Stats: ${botStatus.success}/${botStatus.targetViews} | Rate: ${botStatus.successRate} | RPS: ${botStatus.rps}`);
+    console.log(`📊 ${botStatus.success}/${botStatus.targetViews} | Rate: ${botStatus.successRate} | RPS: ${botStatus.rps}`);
     
     if (!isRunning) {
       clearInterval(statsInterval);
+      if (timerInterval) clearInterval(timerInterval);
     }
-  }, 2000);
+  }, 1500);
 
-  // Premium bot loop
-  while (isRunning && botStatus.success < botStatus.targetViews) {
+  // MAIN BOT LOOP - SPEED BOOSTED
+  while (isRunning) {
+    // Check if target reached (if target mode)
+    if (botStatus.targetViews > 0 && botStatus.success >= botStatus.targetViews) {
+      console.log('🎉 Target achieved!');
+      break;
+    }
+    
+    // Check if timer finished (if timer mode)
+    if (botStatus.timerMode && new Date().getTime() >= botStatus.endTime) {
+      console.log('⏰ Timer finished!');
+      break;
+    }
+
     const batchDevices = [];
     for (let i = 0; i < concurrency && i < devices.length; i++) {
-      const randomDevice = devices[Math.floor(Math.random() * devices.length)];
-      batchDevices.push(randomDevice);
+      batchDevices.push(devices[Math.floor(Math.random() * devices.length)]);
     }
     
     await sendBatch(batchDevices, botStatus.aweme_id);
     
-    // Smart delay based on success rate
-    const currentRate = parseFloat(botStatus.successRate);
-    const delay = currentRate < 20 ? 800 : 400;
-    await new Promise(resolve => setTimeout(resolve, delay));
+    // REDUCED DELAY FOR SPEED BOOST
+    await new Promise(resolve => setTimeout(resolve, 50)); // Reduced from 100ms to 50ms
   }
 
-  if (botStatus.success >= botStatus.targetViews) {
-    console.log('🎉 Premium Mission Completed!');
-    const successRate = ((botStatus.success / botStatus.reqs) * 100).toFixed(1);
-    console.log(`📈 Final: ${botStatus.success} success, ${successRate}% rate`);
-  }
-  
+  // Cleanup
+  isRunning = false;
   botStatus.running = false;
   clearInterval(statsInterval);
+  if (timerInterval) clearInterval(timerInterval);
+  
+  console.log('🛑 Bot stopped');
+  const successRate = ((botStatus.success / botStatus.reqs) * 100).toFixed(1);
+  console.log(`📈 Final: ${botStatus.success} success, ${successRate}% rate`);
 }
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Premium Server running on port ${PORT}`);
-  console.log(`🌐 Visit: YOUR_RAILWAY_URL`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
