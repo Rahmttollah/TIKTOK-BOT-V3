@@ -3,6 +3,9 @@ const fs = require('fs');
 const crypto = require('crypto');
 const readline = require('readline-sync');
 
+// Railway PORT fix
+const PORT = process.env.PORT || 3000;
+
 let reqs = 0, success = 0, fails = 0;
 let rps = 0, rpm = 0;
 let targetViews = 0;
@@ -10,6 +13,25 @@ let isRunning = true;
 
 const devices = fs.existsSync('devices.txt') ? fs.readFileSync('devices.txt', 'utf-8').split('\n').filter(Boolean) : [];
 const proxies = fs.existsSync('proxies.txt') ? fs.readFileSync('proxies.txt', 'utf-8').split('\n').filter(Boolean) : [];
+
+// Simple HTTP server for Railway health checks
+const http = require('http');
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({
+    status: 'running',
+    success: success,
+    fails: fails,
+    target: targetViews,
+    progress: `${success}/${targetViews}`,
+    message: 'TikTok View Bot is running on Railway'
+  }));
+});
+
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🌐 Health check: https://tiktok-bot-v3-production.up.railway.app`);
+});
 
 function gorgon(params, data, cookies, unix) {
     function md5(input) {
@@ -62,7 +84,6 @@ function sendRequest(did, iid, cdid, openudid, aweme_id) {
                         success++;
                         console.log(`✅ ${success}/${targetViews} | Req: ${reqs} | RPS: ${rps}`);
                         
-                        // Target check
                         if (success >= targetViews) {
                             console.log('\n🎉 TARGET ACHIEVED! Stopping bot...');
                             isRunning = false;
@@ -117,10 +138,9 @@ function statsLoop() {
 }
 
 function printBanner() {
-    console.clear();
     console.log('\x1b[36m╔══════════════════════════════════════════════════════════════╗\x1b[0m');
     console.log('\x1b[36m║\x1b[0m                                                              \x1b[36m║\x1b[0m');
-    console.log('\x1b[36m║\x1b[0m  \x1b[35m🎯 TIKTOK VIEW BOT - TARGET MODE\x1b[0m                            \x1b[36m║\x1b[0m');
+    console.log('\x1b[36m║\x1b[0m  \x1b[35m🎯 TIKTOK VIEW BOT - RAILWAY EDITION\x1b[0m                        \x1b[36m║\x1b[0m');
     console.log('\x1b[36m║\x1b[0m  \x1b[33m⏰ 24/7 CLOUD RUNNING | AUTO STOP ON TARGET\x1b[0m                  \x1b[36m║\x1b[0m');
     console.log('\x1b[36m║\x1b[0m                                                              \x1b[36m║\x1b[0m');
     console.log('\x1b[36m║\x1b[0m               \x1b[33mCREATED BY: NAIMUL HACKER KING\x1b[0m               \x1b[36m║\x1b[0m');
@@ -129,42 +149,28 @@ function printBanner() {
     console.log('');
 }
 
-async function main() {
+// Auto-start for Railway (no user input)
+async function autoStart() {
     printBanner();
     
-    console.log('\x1b[33m🚀 TikTok View Bot - Cloud Edition\x1b[0m\n');
+    console.log('\x1b[33m🚀 Auto-starting TikTok View Bot on Railway...\x1b[0m\n');
     console.log('\x1b[36m📊 System Status:\x1b[0m');
     console.log(`   \x1b[36m• Devices Loaded: ${devices.length}\x1b[0m`);
     console.log(`   \x1b[36m• Proxies Loaded: ${proxies.length}\x1b[0m`);
+    console.log(`   \x1b[36m• Server Port: ${PORT}\x1b[0m`);
     console.log('');
 
-    // Get target views
-    targetViews = readline.questionInt('🎯 Enter Target Views: ');
-    
-    if (isNaN(targetViews) || targetViews <= 0) {
-        console.log('\x1b[31m❌ Invalid target views\x1b[0m');
-        process.exit(0);
-    }
+    // Default values for Railway auto-start
+    targetViews = 10000; // Default target
+    const aweme_id = "7304597091503320326"; // Default video ID (change this)
 
-    // Get video ID
-    let aweme_id;
-    const videoInput = readline.question('📹 Enter Video Link or ID: ');
-    const idMatch = videoInput.match(/\d{18,19}/g);
-    if (!idMatch) {
-        console.log('\x1b[31m❌ Invalid video link or ID\x1b[0m');
-        process.exit(0);
-    }
-    aweme_id = idMatch[0];
+    console.log(`\x1b[32m🎯 Default Target Views: ${targetViews}\x1b[0m`);
+    console.log(`\x1b[32m📹 Default Video ID: ${aweme_id}\x1b[0m`);
+    console.log('\x1b[33m🚀 Starting bot in 5 seconds...\x1b[0m');
+    console.log('\x1b[33m💡 Change default values in code for different targets\x1b[0m\n');
 
-    if (devices.length === 0) {
-        console.log('❌ devices.txt is empty or missing!');
-        process.exit(1);
-    }
-
-    console.log(`\n\x1b[32m🎯 Target Views: ${targetViews}\x1b[0m');
-    console.log(`\x1b[32m📹 Target Video ID: ${aweme_id}\x1b[0m`);
-    console.log('\x1b[33m🚀 Starting cloud bot...\x1b[0m');
-    console.log('\x1b[33m⏳ Bot will auto-stop when target reached\x1b[0m\n');
+    // Wait 5 seconds before starting
+    await new Promise(resolve => setTimeout(resolve, 5000));
 
     statsLoop();
 
@@ -178,30 +184,21 @@ async function main() {
         }
         await sendBatch(batchDevices, aweme_id);
         
-        // Small delay between batches
         await new Promise(resolve => setTimeout(resolve, 100));
     }
 
     // TARGET COMPLETED
     console.log('\n\x1b[32m🎉 MISSION ACCOMPLISHED! 🎉\x1b[0m');
-    console.log(`\x1b[32m✅ Successfully delivered: ${success} views\x1b[0m');
-    console.log(`\x1b[36m📊 Final Stats:\x1b[0m');
-    console.log(`   \x1b[36m• Successful: ${success}\x1b[0m');
-    console.log(`   \x1b[36m• Failed: ${fails}\x1b[0m');
-    console.log(`   \x1b[36m• Total Requests: ${reqs}\x1b[0m');
-    console.log(`   \x1b[36m• Success Rate: ${((success/reqs)*100).toFixed(2)}%\x1b[0m');
-    console.log('\n\x1b[33m👑 Thanks for using NAIMUL HACKER KING Viewbot!\x1b[0m');
+    console.log(`\x1b[32m✅ Successfully delivered: ${success} views\x1b[0m`);
+    console.log(`\x1b[36m📊 Final Stats:\x1b[0m`);
+    console.log(`   \x1b[36m• Successful: ${success}\x1b[0m`);
+    console.log(`   \x1b[36m• Failed: ${fails}\x1b[0m`);
+    console.log(`   \x1b[36m• Total Requests: ${reqs}\x1b[0m`);
+    console.log(`   \x1b[36m• Success Rate: ${((success/reqs)*100).toFixed(2)}%\x1b[0m`);
     
-    process.exit(0);
+    // Keep server running even after target completed
+    console.log('\x1b[33m🔄 Server remains running for health checks...\x1b[0m');
 }
 
-// Handle shutdown
-process.on('SIGINT', () => {
-    console.log('\n\n🛑 Manual shutdown detected...');
-    console.log(`📈 Progress: ${success}/${targetViews} views`);
-    isRunning = false;
-    setTimeout(() => process.exit(0), 1000);
-});
-
-// Start the bot
-main().catch(console.error);
+// Start the bot automatically for Railway
+autoStart().catch(console.error);
