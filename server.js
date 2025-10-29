@@ -25,7 +25,7 @@ let botStatus = {
   rps: 0,
   rpm: 0,
   successRate: '0%',
-  timerMode: false,
+  mode: 'target', // 'target', 'timer', 'both'
   timeLeft: 0
 };
 
@@ -42,8 +42,7 @@ app.get('/status', (req, res) => {
   const success = botStatus.success;
   botStatus.successRate = total > 0 ? ((success / total) * 100).toFixed(1) + '%' : '0%';
   
-  // Calculate time left for timer mode
-  if (botStatus.timerMode && botStatus.endTime) {
+  if (botStatus.mode === 'timer' || botStatus.mode === 'both') {
     const now = new Date().getTime();
     botStatus.timeLeft = Math.max(0, botStatus.endTime - now);
   }
@@ -52,7 +51,9 @@ app.get('/status', (req, res) => {
 });
 
 app.post('/start', (req, res) => {
-  const { targetViews, videoLink, timerHours, timerMinutes, timerSeconds } = req.body;
+  const { targetViews, videoLink, timerHours, timerMinutes, timerSeconds, mode } = req.body;
+  
+  console.log('Start request received:', { targetViews, videoLink, timerHours, timerMinutes, timerSeconds, mode });
   
   if (!videoLink) {
     return res.json({ success: false, message: 'Video link required' });
@@ -63,16 +64,28 @@ app.post('/start', (req, res) => {
     return res.json({ success: false, message: 'Invalid TikTok video link' });
   }
 
+  // Validate mode requirements
+  if (mode === 'target' && (!targetViews || targetViews <= 0)) {
+    return res.json({ success: false, message: 'Target views required for target mode' });
+  }
+  
+  if (mode === 'timer' && !timerHours && !timerMinutes && !timerSeconds) {
+    return res.json({ success: false, message: 'Timer duration required for timer mode' });
+  }
+  
+  if (mode === 'both' && (!targetViews || targetViews <= 0) && (!timerHours && !timerMinutes && !timerSeconds)) {
+    return res.json({ success: false, message: 'Either target views or timer duration required for both mode' });
+  }
+
   // Calculate timer end time if timer mode
   let endTime = null;
-  let timerMode = false;
-  
-  if (timerHours > 0 || timerMinutes > 0 || timerSeconds > 0) {
+  if (mode === 'timer' || mode === 'both') {
     const totalSeconds = (parseInt(timerHours) || 0) * 3600 + 
                         (parseInt(timerMinutes) || 0) * 60 + 
                         (parseInt(timerSeconds) || 0);
-    endTime = new Date().getTime() + (totalSeconds * 1000);
-    timerMode = true;
+    if (totalSeconds > 0) {
+      endTime = new Date().getTime() + (totalSeconds * 1000);
+    }
   }
 
   // Reset stats
@@ -88,11 +101,18 @@ app.post('/start', (req, res) => {
     rps: 0,
     rpm: 0,
     successRate: '0%',
-    timerMode: timerMode,
-    timeLeft: timerMode ? (endTime - new Date().getTime()) : 0
+    mode: mode,
+    timeLeft: endTime ? (endTime - new Date().getTime()) : 0
   };
 
   isRunning = true;
+  
+  console.log('Starting bot with config:', {
+    target: botStatus.targetViews,
+    videoId: botStatus.aweme_id,
+    mode: botStatus.mode,
+    endTime: botStatus.endTime
+  });
   
   // Start bot in background
   startBot();
@@ -102,7 +122,7 @@ app.post('/start', (req, res) => {
     message: 'Bot started successfully!',
     target: botStatus.targetViews,
     videoId: botStatus.aweme_id,
-    timerMode: timerMode
+    mode: botStatus.mode
   });
 });
 
@@ -115,7 +135,7 @@ app.post('/stop', (req, res) => {
   res.json({ success: true, message: 'Bot stopped' });
 });
 
-// Original Gorgon function
+// Original Gorgon function (Your working one)
 function gorgon(params, data, cookies, unix) {
   function md5(input) {
     return crypto.createHash('md5').update(input).digest('hex');
@@ -151,7 +171,7 @@ function sendRequest(did, iid, cdid, openudid, aweme_id) {
         'content-type': 'application/x-www-form-urlencoded',
         'content-length': Buffer.byteLength(payload)
       },
-      timeout: 5000
+      timeout: 3000 // Reduced timeout for speed
     };
 
     const req = https.request(options, (res) => {
@@ -160,12 +180,11 @@ function sendRequest(did, iid, cdid, openudid, aweme_id) {
         data += chunk;
       });
       res.on('end', () => {
-        reqs++;
+        botStatus.reqs++;
         try {
           const jsonData = JSON.parse(data);
           if (jsonData && jsonData.log_pb && jsonData.log_pb.impr_id) {
             botStatus.success++;
-            console.log(`✅ ${botStatus.success}/${botStatus.targetViews} | Total: ${botStatus.reqs}`);
           } else {
             botStatus.fails++;
           }
@@ -203,7 +222,7 @@ async function sendBatch(batchDevices, aweme_id) {
 }
 
 async function startBot() {
-  console.log('🚀 Starting TikTok View Bot...');
+  console.log('🚀 STARTING TIKTOK BOT - MAX SPEED MODE');
   
   const devices = fs.existsSync('devices.txt') ? 
     fs.readFileSync('devices.txt', 'utf-8').split('\n').filter(Boolean) : [];
@@ -216,13 +235,22 @@ async function startBot() {
   }
 
   console.log(`📱 Loaded ${devices.length} devices`);
+  console.log(`🎯 Mode: ${botStatus.mode}`);
+  console.log(`📹 Video ID: ${botStatus.aweme_id}`);
   
-  // SPEED BOOST - Increased concurrency
-  const concurrency = 300; // Increased from 200 to 300
+  if (botStatus.mode === 'target') {
+    console.log(`🎯 Target: ${botStatus.targetViews} views`);
+  }
+  if (botStatus.mode === 'timer' || botStatus.mode === 'both') {
+    console.log(`⏰ End Time: ${new Date(botStatus.endTime).toLocaleTimeString()}`);
+  }
+
+  // MAXIMUM SPEED - No concurrency limit, minimal delay
+  const concurrency = 500; // Maximum concurrency
   let lastReqs = 0;
 
   // Timer check for timer mode
-  if (botStatus.timerMode) {
+  if (botStatus.mode === 'timer' || botStatus.mode === 'both') {
     timerInterval = setInterval(() => {
       const now = new Date().getTime();
       if (now >= botStatus.endTime) {
@@ -236,7 +264,7 @@ async function startBot() {
 
   // RPS Calculator
   const statsInterval = setInterval(() => {
-    botStatus.rps = ((botStatus.reqs - lastReqs) / 1.5).toFixed(1);
+    botStatus.rps = ((botStatus.reqs - lastReqs) / 1).toFixed(1);
     botStatus.rpm = (botStatus.rps * 60).toFixed(1);
     lastReqs = botStatus.reqs;
     
@@ -250,22 +278,31 @@ async function startBot() {
       clearInterval(statsInterval);
       if (timerInterval) clearInterval(timerInterval);
     }
-  }, 1500);
+  }, 1000);
 
-  // MAIN BOT LOOP - SPEED BOOSTED
+  // MAIN BOT LOOP - MAXIMUM SPEED
+  console.log('🔥 Starting maximum speed requests...');
+  
   while (isRunning) {
-    // Check if target reached (if target mode)
-    if (botStatus.targetViews > 0 && botStatus.success >= botStatus.targetViews) {
-      console.log('🎉 Target achieved!');
-      break;
+    // Check stop conditions based on mode
+    let shouldStop = false;
+    
+    if (botStatus.mode === 'target') {
+      shouldStop = botStatus.success >= botStatus.targetViews;
+    } else if (botStatus.mode === 'timer') {
+      shouldStop = new Date().getTime() >= botStatus.endTime;
+    } else if (botStatus.mode === 'both') {
+      const targetReached = botStatus.targetViews > 0 && botStatus.success >= botStatus.targetViews;
+      const timerFinished = botStatus.endTime && new Date().getTime() >= botStatus.endTime;
+      shouldStop = targetReached || timerFinished;
     }
     
-    // Check if timer finished (if timer mode)
-    if (botStatus.timerMode && new Date().getTime() >= botStatus.endTime) {
-      console.log('⏰ Timer finished!');
+    if (shouldStop) {
+      console.log('🛑 Stop condition met!');
       break;
     }
 
+    // Send maximum concurrent requests
     const batchDevices = [];
     for (let i = 0; i < concurrency && i < devices.length; i++) {
       batchDevices.push(devices[Math.floor(Math.random() * devices.length)]);
@@ -273,8 +310,8 @@ async function startBot() {
     
     await sendBatch(batchDevices, botStatus.aweme_id);
     
-    // REDUCED DELAY FOR SPEED BOOST
-    await new Promise(resolve => setTimeout(resolve, 50)); // Reduced from 100ms to 50ms
+    // MINIMAL DELAY FOR MAXIMUM SPEED - Only 10ms
+    await new Promise(resolve => setTimeout(resolve, 10));
   }
 
   // Cleanup
@@ -284,10 +321,11 @@ async function startBot() {
   if (timerInterval) clearInterval(timerInterval);
   
   console.log('🛑 Bot stopped');
-  const successRate = ((botStatus.success / botStatus.reqs) * 100).toFixed(1);
-  console.log(`📈 Final: ${botStatus.success} success, ${successRate}% rate`);
+  const successRate = botStatus.reqs > 0 ? ((botStatus.success / botStatus.reqs) * 100).toFixed(1) : 0;
+  console.log(`📈 Final Stats: ${botStatus.success} success, ${botStatus.fails} fails, ${successRate}% success rate`);
 }
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🔥 MAXIMUM SPEED MODE ACTIVATED`);
 });
